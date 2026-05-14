@@ -9,9 +9,16 @@ import Exams from '../components/Exams';
 import Timer from '../components/Timer/Timer';
 import Taqadom from '../components/Taqadom/Taqadom';
 import Footer from '../components/Footer';
+import { examService, sessionService, migrateFromLocalStorage } from '../db';
 
-const STORAGE_KEY_EXAMS = 'studyapp_exams';
-const STORAGE_KEY_SESSIONS = 'studyapp_sessions';
+const defaultExams = [
+  { id: 1, name: 'الصف الأول المتوسط', icon: '📚', subjects: [{ name: 'الرياضيات', topics: ['العمليات الحسابية', 'الكسور', 'النسبة المئوية', 'المعادلات البسيطة', 'الهندسة'] }, { name: 'العلوم', topics: ['المادة والقياس', 'الحركة والقوة', 'الطاقة', 'الضوء والصوت', 'الحياة'] }, { name: 'اللغة العربية', topics: ['النحو والصرف', 'القراءة', 'التعبير', 'الإملاء', 'الأدب'] }, { name: 'الاجتماعيات', topics: ['الجغرافيا', 'التاريخ', 'الوطنية', 'الاقتصاد'] }] },
+  { id: 2, name: 'الصف الثاني المتوسط', icon: '📖', subjects: [{ name: 'الرياضيات', topics: ['الجبر', 'المتباينات', 'الدوال', 'الإحصاء', 'المساحة'] }, { name: 'العلوم', topics: ['الخلية', 'الوراثة', 'البيئة', 'الكيمياء', 'الفيزياء'] }, { name: 'اللغة العربية', topics: ['النصوص', 'القواعد', 'الإنشاء', 'الشعر', 'النثر'] }, { name: 'الاجتماعيات', topics: ['تاريخ العالم', 'الجغرافيا', 'الحضارات', 'الأنظمة'] }] },
+  { id: 3, name: 'الصف الثالث المتوسط', icon: '🎯', subjects: [{ name: 'الرياضيات', topics: ['المعادلات الخطية', 'التناسب', 'الإحصاء', 'الهندسة التحليلية', 'المجموعات'] }, { name: 'العلوم', topics: ['الطباعة', 'التكاثر', 'الوراثة', 'البيئة', 'الكهرومغناطيسية'] }, { name: 'اللغة العربية', topics: ['البلاغة', 'النقد', 'القواعد المتقدمة', 'الإماء', 'القراءة النقدية'] }] },
+  { id: 4, name: 'الصف الأول الثانوي', icon: '🚀', subjects: [{ name: 'الرياضيات', topics: ['المجموعات', 'العلاقات والدوال', 'المتتاليات', 'الحدوديات', 'المصفوفات'] }, { name: 'الفيزياء', topics: ['الحركة', 'القوى', 'الطاقة', 'الشد والضغط', 'المد والجزر'] }, { name: 'الكيمياء', topics: ['المادة', 'الذرة', 'الجدول الدوري', 'الروابط', 'التحليل'] }, { name: 'الأحياء', topics: ['الخلية', 'الأنسجة', 'التنفس', 'التغذية', 'التكاثر'] }] },
+  { id: 5, name: 'الصف الثاني الثانوي - العلمي', icon: '🔬', subjects: [{ name: 'الرياضيات', topics: ['التكامل', 'التفاضل', 'المعادلات التفاضلية', 'المثلثات', 'الإحصاء'] }, { name: 'الفيزياء', topics: ['الكهرومغناطيسية', 'البصريات', 'الصوت', 'الحرارة', 'ميكانيكا الكم'] }, { name: 'الكيمياء', topics: ['الحموض والقواعد', 'التأكسد والاختزال', 'الكيمياء العضوية', 'التحليل الكمي'] }, { name: 'الأحياء', topics: ['الوراثة', 'التطور', 'البيئة', 'التقنية الحيوية', 'علم الخلايا'] }] },
+  { id: 6, name: 'الصف الثالث الثانوي - العلمي', icon: '🎓', subjects: [{ name: 'الرياضيات', topics: ['المصفوفات', 'المحددات', 'الهندسة الفضائية', 'المعادلات المركبة', 'الإحصاء المتقدم'] }, { name: 'الفيزياء', topics: ['النسبية', 'الفيزياء النووية', 'الجسيمات', 'الميكانيكا الإحصائية', 'الكهرومغناطيسية المتقدمة'] }, { name: 'الكيمياء', topics: ['الكيمياء الحيوية', 'الكيمياء الصناعية', 'التحليل الطيفي', 'الكيمياء التطبيقية'] }, { name: 'الأحياء', topics: ['التقنية الحيوية', 'الهندسة الوراثية', 'الطب', 'البيئة المتقدمة'] }] }
+];
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -19,59 +26,60 @@ function App() {
     const saved = localStorage.getItem('darkMode');
     return saved ? JSON.parse(saved) : false;
   });
+  const [exams, setExams] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [exams, setExams] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_EXAMS);
-    return saved ? JSON.parse(saved) : getDefaultExams(saved);
-  });
-
-  const [sessions, setSessions] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_SESSIONS);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  function getDefaultExams(saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    } catch {}
-    return [];
-  }
+  useEffect(() => {
+    const initData = async () => {
+      await migrateFromLocalStorage(defaultExams);
+      const loadedExams = await examService.getAll();
+      const loadedSessions = await sessionService.getAll();
+      setExams(loadedExams);
+      setSessions(loadedSessions);
+      setIsLoading(false);
+    };
+    initData();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
     document.body.classList.toggle('dark-mode', darkMode);
   }, [darkMode]);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_EXAMS, JSON.stringify(exams));
-  }, [exams]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessions));
-  }, [sessions]);
-
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
-  const handleSaveExam = (examData) => {
+  const handleSaveExam = async (examData) => {
     if (examData.id) {
-      setExams(exams.map(e => e.id === examData.id ? { ...examData, id: examData.id } : e));
+      await examService.update(examData);
     } else {
-      setExams([...exams, { ...examData, id: Date.now() }]);
+      await examService.add(examData);
     }
+    const updatedExams = await examService.getAll();
+    setExams(updatedExams);
   };
 
-  const handleDeleteExam = (id) => {
-    setExams(exams.filter(e => e.id !== id));
+  const handleDeleteExam = async (id) => {
+    await examService.delete(id);
+    const updatedExams = await examService.getAll();
+    setExams(updatedExams);
   };
 
-  const handleSaveSession = (session) => {
-    setSessions([...sessions, session]);
+  const handleSaveSession = async (session) => {
+    await sessionService.add(session);
+    const updatedSessions = await sessionService.getAll();
+    setSessions(updatedSessions);
   };
 
-  const handleDeleteSession = (id) => {
-    setSessions(sessions.filter(s => s.id !== id));
+  const handleDeleteSession = async (id) => {
+    await sessionService.delete(id);
+    const updatedSessions = await sessionService.getAll();
+    setSessions(updatedSessions);
   };
+
+  if (isLoading) {
+    return <div>جاري التحميل...</div>;
+  }
 
   return (
     <div className="App">
@@ -81,7 +89,13 @@ function App() {
         <Footer />
       </div>
       <div className="app-content">
-        {currentPage === 'home' && <Main />}
+        {currentPage === 'home' && (
+          <Main 
+            sessions={sessions} 
+            exams={exams} 
+            onNavigate={setCurrentPage} 
+          />
+        )}
         {currentPage === 'exams' && (
           <Exams 
             exams={exams} 
@@ -103,7 +117,12 @@ function App() {
             onDeleteSession={handleDeleteSession}
           />
         )}
-        {currentPage === 'analytics' && <Analytics />}
+        {currentPage === 'analytics' && (
+          <Analytics 
+            sessions={sessions}
+            exams={exams}
+          />
+        )}
         {currentPage === 'about' && <About />}
       </div>
     </div>

@@ -1,83 +1,7 @@
 import { useState } from 'react';
 import '../../styles/exams.css';
 
-const defaultExams = [
-  {
-    id: 1,
-    name: 'الصف الأول المتوسط',
-    icon: '📚',
-    subjects: [
-      { name: 'الرياضيات', topics: ['العمليات الحسابية', 'الكسور', 'النسبة المئوية', 'المعادلات البسيطة', 'الهندسة'] },
-      { name: 'العلوم', topics: ['المادة والقياس', 'الحركة والقوة', 'الطاقة', 'الضوء والصوت', 'الحياة'] },
-      { name: 'اللغة العربية', topics: ['النحو والصرف', 'القراءة', 'التعبير', 'الإملاء', 'الأدب'] },
-      { name: 'الاجتماعيات', topics: ['الجغرافيا', 'التاريخ', 'الوطنية', 'الاقتصاد'] },
-      { name: 'التربية الفنية', topics: ['الرسم', 'الألوان', 'التشكيل'] },
-    ]
-  },
-  {
-    id: 2,
-    name: 'الصف الثاني المتوسط',
-    icon: '📖',
-    subjects: [
-      { name: 'الرياضيات', topics: ['الجبر', 'المتباينات', 'الدوال', 'الإحصاء', 'المساحة'] },
-      { name: 'العلوم', topics: ['الخلية', 'الوراثة', 'البيئة', 'الكيمياء', 'الفيزياء'] },
-      { name: 'اللغة العربية', topics: ['النصوص', 'القواعد', 'الإنشاء', 'الشعر', 'النثر'] },
-      { name: 'الاجتماعيات', topics: ['تاريخ العالم', 'الجغرافيا', 'الحضارات', 'الأنظمة'] },
-      { name: 'التربية الفنية', topics: ['الرسم الهندسي', 'التصميم', 'التطبيقات'] },
-    ]
-  },
-  {
-    id: 3,
-    name: 'الصف الثالث المتوسط',
-    icon: '🎯',
-    subjects: [
-      { name: 'الرياضيات', topics: ['المعادلات الخطية', 'التناسب', 'الإحصاء', 'الهندسة التحليلية', 'المجموعات'] },
-      { name: 'العلوم', topics: ['الطباعة', 'التكاثر', 'الوراثة', 'البيئة', 'الكهرومغناطيسية'] },
-      { name: 'اللغة العربية', topics: ['البلاغة', 'النقد', 'القواعد المتقدمة', 'الإماء', 'القراءة النقدية'] },
-      { name: 'الاجتماعيات', topics: ['تاريخ الوطن', 'الجغرافيا', 'التربية الوطنية', 'الاقتصاد'] },
-      { name: 'التربية الفنية', topics: ['التصميم الرقمي', 'التطبيقات العملية', 'المشاريع'] },
-    ]
-  },
-  {
-    id: 4,
-    name: 'الصف الأول الثانوي',
-    icon: '🚀',
-    subjects: [
-      { name: 'الرياضيات', topics: ['المجموعات', 'الrelations/functions', 'المتتاليات', 'الحدوديات', 'المصفوفات'] },
-      { name: 'الفيزياء', topics: ['الحركة', 'القوى', 'الطاقة', 'الشد والضغط', 'المد والجزر'] },
-      { name: 'الكيمياء', topics: ['المادة', 'الذرة', 'الجدول الدوري', 'الروابط', 'التحليل'] },
-      { name: 'الأحياء', topics: ['الخلية', 'الأنسجة', 'التنفس', 'التغذية', 'التكاثر'] },
-      { name: 'اللغة العربية', topics: ['النصوص', 'القواعد', 'الأدب', 'البلاغة', 'التعبير'] },
-    ]
-  },
-  {
-    id: 5,
-    name: 'الصف الثاني الثانوي - العلمي',
-    icon: '🔬',
-    subjects: [
-      { name: 'الرياضيات', topics: ['التكامل', 'التفاضل', 'المعادلات التفاضلية', 'المثلثات', 'الإحصاء'] },
-      { name: 'الفيزياء', topics: ['الكهرومغناطيسية', 'البصريات', 'الصوت', 'الحرارة', 'ميكانيكا الكم'] },
-      { name: 'الكيمياء', topics: ['الحموض والقواعد', 'التأكسد والاختزال', 'الكيمياء العضوية', 'التحليل الكمي'] },
-      { name: 'الأحياء', topics: ['الوراثة', 'التطور', 'البيئة', 'التقنية الحيوية', 'علم الخلايا'] },
-      { name: 'اللغة العربية', topics: ['النصوص الأدبية', 'القواعد', 'البلاغة', 'النقد', 'الإماء'] },
-    ]
-  },
-  {
-    id: 6,
-    name: 'الصف الثالث الثانوي - العلمي',
-    icon: '🎓',
-    subjects: [
-      { name: 'الرياضيات', topics: ['المصفوفات', 'المحددات', 'الهندسة الفضائية', 'المعادلات комплекс', 'الإحصاء المتقدم'] },
-      { name: 'الفيزياء', topics: ['النسبية', 'الفيزياء النووية', 'الجسيمات', 'الميكانيكا الإحصائية', 'الكهرومغناطيسية المتقدمة'] },
-      { name: 'الكيمياء', topics: ['الكيمياء الحيوية', 'الكيمياء الصناعية', 'التحليل الطيفي', 'الكيمياء التطبيقية'] },
-      { name: 'الأحياء', topics: ['التقنية الحيوية', 'الهندسة الوراثية', 'الطب', 'البيئة المتقدمة'] },
-      { name: 'اللغة العربية', topics: ['الأدب', 'النقد', 'البلاغة', 'الإماء', 'البحث العلمي'] },
-    ]
-  },
-];
-
-export default function Exams({ exams, onSaveExam, onDeleteExam }) {
-  const [examsList, setExamsList] = useState(exams || defaultExams);
+export default function Exams({ exams = [], onSaveExam, onDeleteExam }) {
   const [showForm, setShowForm] = useState(false);
   const [editingExam, setEditingExam] = useState(null);
   const [expandedExam, setExpandedExam] = useState(null);
@@ -88,8 +12,6 @@ export default function Exams({ exams, onSaveExam, onDeleteExam }) {
     icon: '📚',
     subjects: [{ name: '', topics: '' }]
   });
-
-  const displayExams = exams || examsList;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -122,14 +44,10 @@ export default function Exams({ exams, onSaveExam, onDeleteExam }) {
     }));
 
     if (editingExam) {
-      setExamsList(examsList.map(exam => 
-        exam.id === editingExam.id 
-          ? { ...formData, id: editingExam.id, subjects: processedSubjects }
-          : exam
-      ));
+      onSaveExam({ ...formData, id: editingExam.id, subjects: processedSubjects });
       setEditingExam(null);
     } else {
-      setExamsList([...examsList, { ...formData, id: Date.now(), subjects: processedSubjects }]);
+      onSaveExam({ ...formData, id: Date.now(), subjects: processedSubjects });
     }
     
     setFormData({ name: '', icon: '📚', subjects: [{ name: '', topics: '' }] });
@@ -151,7 +69,7 @@ export default function Exams({ exams, onSaveExam, onDeleteExam }) {
   };
 
   const confirmDelete = () => {
-    setExamsList(examsList.filter(exam => exam.id !== deleteConfirm));
+    onDeleteExam(deleteConfirm);
     setDeleteConfirm(null);
   };
 
@@ -246,7 +164,7 @@ export default function Exams({ exams, onSaveExam, onDeleteExam }) {
       )}
 
       <div className="exams-grid">
-        {displayExams.map((exam) => (
+        {exams.map((exam) => (
           <div key={exam.id} className="exam-card">
             <div className="exam-header" onClick={() => toggleExpand(exam.id)}>
               <span className="exam-icon">{exam.icon}</span>
