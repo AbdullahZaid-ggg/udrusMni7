@@ -1,0 +1,28 @@
+.footer {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  padding: 12px;
+  border-radius: var(--md-sys-shape-corner-large);
+  text-align: center;
+  font-size: 0.8rem;
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.footer p {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (min-width: 1024px) {
+  .footer {
+    padding: 16px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 10px;
+    font-size: 0.75rem;
+  }
+}

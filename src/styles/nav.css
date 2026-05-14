@@ -1,0 +1,105 @@
+.nav {
+  background-color: var(--md-sys-color-surface-container);
+  padding: 8px;
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-1);
+  flex: 1;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item button {
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+  border: 2px solid transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: right;
+  padding: 12px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: 
+    background-color var(--md-sys-motion-duration-short2), 
+    color var(--md-sys-motion-duration-short2),
+    border-color var(--md-sys-motion-duration-short2),
+    box-shadow var(--md-sys-motion-duration-short2);
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-item button::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid var(--md-sys-color-primary);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short2), left var(--md-sys-motion-duration-short2);
+}
+
+.nav-item button:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.nav-item button:hover::before {
+  opacity: 1;
+  left: 8px;
+}
+
+.nav-item button.active {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.nav-item button.active::before {
+  opacity: 1;
+  left: 8px;
+  border-left-color: var(--md-sys-color-on-primary);
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    padding: 12px;
+  }
+
+  .nav-item button {
+    font-size: 0.95rem;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 6px;
+  }
+
+  .nav-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-item button {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+}
